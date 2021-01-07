@@ -1,5 +1,10 @@
 <template>
 	<view>
+    <!-- 搜索组件 -->
+  <view class="search-box">
+     <my-search @click="gotosearch"></my-search>
+  </view>
+    <!-- /搜索组件结束 -->
     <!-- 轮播图的区域 -->
 		<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" circular>
 		  <swiper-item v-for="(item,i) in swiperList" :key="i">
@@ -32,7 +37,7 @@
             <!-- 右侧4个小图片的盒子 -->
             <view class="right-img-box">
               <!-- 因为每一张图片是在product_list里,所以循环这个数组,但是会把第一项循环出来,所以要忽略第一项 -->
-              <navigator class="right-img-item" v-for="(item2,i2) in item.product_list" :key="i2" v-if="i2!==0" :url="item2.url">
+              <navigator class="right-img-item" v-for="(item2,i2) in item.product_list" :key="i2" v-if="i2 !== 0" :url="item2.url">
                 <image :src="item2.image_src" mode="widthFix" :style="{width:item2.image_width+'rpx'}"></image>
               </navigator>
             </view>
@@ -87,20 +92,35 @@
      async getFloorList(){
         const {data:res} = await uni.$http.get('/api/public/v1/home/floordata')
         if(res.meta.status!==200) return uni.$showMsg()
+        // 对数据进行处理
         // 通过双层for循环,遍历出楼层图片的url地址
         res.message.forEach(floor=>{
           floor.product_list.forEach(pro=>{
-            // 遍历出来的url地址前面要加上分包的路径,以?进行分割,下标为1的元素
+            // 遍历出来的url地址前面要加上分包的路径,以?进行分割,拿到下标为1的元素
             pro.url='/subpkg/goods_list/goods_list?'+pro.navigator_url.split('?')[1]
           })
         })
         this.floorList=res.message
+      },
+      gotosearch(){
+        console.log('ok')
+        uni.navigateTo({
+          url:'/subpkg/search/search'
+        })
       }
     }
 	}
 </script>
 
 <style lang="scss">
+  .search-box{
+    // 设置定位效果为吸顶
+    position: sticky;
+    // 吸顶的位置
+    top: 0;
+    // 提高层级,防止被轮播图覆盖
+    z-index: 999;
+  }
     swiper{
      height: 330rpx;
      .swiper-item,

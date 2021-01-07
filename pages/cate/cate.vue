@@ -1,8 +1,11 @@
 <template>
 	<view>
+    <!-- 自定义的搜索组件 -->
+    <my-search @click="gotosearch"></my-search>
 		<view class="scroll-view-container">
       <!-- 左侧的滚动视图区域 -->
 		  <scroll-view scroll-y="true" class="left-scroll-view" :style="{height:wh+'px'}">
+        <!-- 使用block标签，可以不渲染block结构 -->
         <block v-for="(item,i) in cateList" :key="i">
           <view :class="['left-scroll-item',i===active?'active':'']" @click="activeChange(i)">{{item.cat_name}}</view>
           </block>
@@ -11,7 +14,7 @@
       <scroll-view scroll-y="true" class="right-scroll-view" :style="{height:wh+'px'}" :scroll-top="scrollTop">
         <!-- 二级分类列表 -->
         <view class="cate-lv2" v-for="(item2,i2) in catelevel2" :key="i2">
-           <view class="cate-lv2-item">{{item2.cat_name}}</view>
+           <view class="cate-lv2-item">/ {{item2.cat_name}} /</view>
            <!-- 三级分类列表 -->
            <view class="cate-lv3-list">
              <view class="cate-lv3-item" v-for="(item3,i3) in item2.children" :key="i3" @click="gotoGoodsList(item3)">
@@ -47,7 +50,8 @@
       const sysInfo = uni.getSystemInfoSync()
       // console.log(sysInfo)
       // 将获取过来当前的高度赋值给wh
-      this.wh=sysInfo.windowHeight
+      // 可用高度 = 屏幕高度 - navigationBar高度 - tabBar高度 - 自定义的search组件高度
+      this.wh=sysInfo.windowHeight - 50
       this.getCateList()
     },
     methods:{
@@ -61,17 +65,23 @@
       // 点击时,传入当前索引值
       activeChange(i){
         // 让激活项的索引等于传入的i
-        this.active=i,
+        this.active = i,
         // 当索引发生改变时,当前的二级分类渲染也要发生改变
-        this.catelevel2=this.cateList[i].children
+        this.catelevel2 = this.cateList[i].children
         // 当切换一级分类时,二级分类的滚动条要重置为0,不能为scroll-top赋相同的值,所以在1和0之间切换
-        this.scrollTop= this.scrollTop === 0 ? 1 : 0
+        this.scrollTop = this.scrollTop === 0 ? 1 : 0
       },
       // 点击三级分类的item项时
       gotoGoodsList(item3){
         // 跳转到商品列表页面,并且传入当前商品的id值
         uni.navigateTo({
           url:'/subpkg/goods_list/goods_list?cid='+item3.cat_id
+        })
+      },
+      gotosearch(){
+        console.log('ok')
+        uni.navigateTo({
+          url:'/subpkg/search/search'
         })
       }
     }
@@ -85,7 +95,7 @@
     width: 120px;
     .left-scroll-item{
       line-height: 60px;
-      background-color: #f7f7f7f;
+      background-color: #F7F7F7;
       text-align: center;
       font-size: 12px;
       &.active{
