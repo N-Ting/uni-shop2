@@ -57,7 +57,9 @@
 				this.inputValue = +val;
 			},
 			inputValue(newVal, oldVal) {
-				if (+newVal !== +oldVal) {
+				// if (+newVal !== +oldVal) {
+          //  新旧内容不同 && 新值内容合法 && 新值中不包含小数点
+          if(+newVal !== +oldVal && Number(newVal) && String(newVal).indexOf('.') === -1){
 					this.$emit("change", newVal);
 				}
 			}
@@ -102,9 +104,9 @@
 				return scale;
 			},
 			_onBlur(event) {
-				let value = event.detail.value;
+				let value = parseInt(event.detail.value)
 				if (!value) {
-					// this.inputValue = 0;
+					this.inputValue = 1;
 					return;
 				}
 				value = +value;

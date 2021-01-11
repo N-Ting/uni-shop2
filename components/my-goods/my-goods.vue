@@ -2,6 +2,7 @@
 	<view class="goods-item">
 	  <!-- 商品左侧图片区域 -->
 	  <view class="left-goods-item">
+        <radio :checked="goods.goods_state" color="#c00000" v-if="showRaido" @click="raidoClickHandle"></radio>
 	    <image :src="goods.goods_small_logo || defaultPic" class="goods-pic"></image>
 	  </view>
 	  <!-- 商品右侧区域 -->
@@ -15,6 +16,7 @@
 	      <view class="goods-price">
 	        ￥{{goods.goods_price | tofixed}}
 	      </view>
+        <uni-number-box :mim="1" :value="goods.goods_count" v-if="showNum" @change="numChangeHandle"></uni-number-box>
 	    </view>
 	  </view>
     </view>
@@ -29,6 +31,16 @@
         type:Object,
         // 默认值为空
         default:{}
+      },
+      showRaido:{
+          type:Boolean,
+          // 默认情况下不会展示raido组件
+          default:false
+      },
+      // 是否展示右侧的NumberBox组件
+      showNum:{
+        type:Boolean,
+        default:false
       }
     },
 		data() {
@@ -42,17 +54,36 @@
       tofixed(num){
         return Number(num).toFixed(2)
         }
+    },
+    methods:{
+      raidoClickHandle(){
+        this.$emit('raido-change',{
+          goods_id:this.goods.goods_id,
+          goods_state:!this.goods.goods_state
+        })
+      },
+      numChangeHandle(val){
+        this.$emit('num-change',{
+          goods_id:this.goods.goods_id,
+          goods_count: +val
+        })
+      }
     }
 	}
 </script>
 
 <style lang="scss">
 .goods-item{
+  width: 750rpx;
+  box-sizing: border-box;
   display: flex;
   padding: 10px 5px;
   border-bottom: 1px solid #f0f0f0;
   .left-goods-item{
     margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     .goods-pic{
       width: 100px;
       height: 100px;
@@ -62,10 +93,16 @@
   }
   .right-goods-item{
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: space-between;
     .goods-name{
       font-size: 13px;
+    }
+    .goods-info-box{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .goods-price{
       font-size: 16px;
