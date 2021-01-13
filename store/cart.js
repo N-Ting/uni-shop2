@@ -71,7 +71,7 @@ export default {
       return state.cart.filter(x=>x.goods_state).reduce((total,item) =>total+=item.goods_count,0)
     },
     checkedGoodsAmount(state){
-      return state.cart.filter(x => x.good_state).rwduce((total,item) =>total +=item.gooods_count * item.goods_price,0).toFixed(2)
+      return state.cart.filter(x => x.good_state).reduce((total,item) =>total +=item.gooods_count * item.goods_price,0).toFixed(2)
     }
   }
   }

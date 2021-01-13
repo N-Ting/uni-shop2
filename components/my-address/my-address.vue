@@ -32,6 +32,7 @@
 	export default {
 		data() {
 			return {
+        isSure: false
 				// address:{}
 			};
 		},
@@ -43,6 +44,7 @@
     methods:{
       ...mapMutations('m_user',['updateAddress']),
      async chooseAddress(){
+       if(this.isSure) return uni.openSetting()
         // 调用小程序提供的chooseAddress()方法，即可选择收货地址的功能
         const [err,succ] = await uni.chooseAddress().catch(err=>err)
         // 用户成功选择了收货地址
@@ -58,7 +60,8 @@
         if( err && (err.errMsg === 'chooseAddress:fail auth deny' || err.errMsg === 'chooseAddress:fail authorize no response')) {
           console.log('需要重新授权')
           // 通过这个方法,让用户重新授权
-          this.reAuth()
+          // this.reAuth()
+          this.isSure = true
         }
       },
       // 让用户重新授权
@@ -73,6 +76,7 @@
         console.log(confirmResult)
         if(confirmResult.cancel) return uni.$showMsg('您取消了地址授权')
         if(confirmResult.confirm) return uni.openSetting({
+          
           success(settingResult){
             console.log(settingResult)
             // 如果scope.address为false,表示取消了授权
